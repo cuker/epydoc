@@ -263,6 +263,7 @@ class _EpydocReader(ApiLinkReader):
         msg = ''.join([c.astext().encode(self._encoding, self._error_handler)
                        for c in error])
 
+        print ParseError(msg, linenum, is_fatal)  #  TODO  are these missing in the output?
         self._errors.append(ParseError(msg, linenum, is_fatal))
 
 class _DocumentPseudoWriter(Writer):
