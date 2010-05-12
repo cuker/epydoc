@@ -202,6 +202,7 @@ def _parse_warn(estr):
     global _parse_warnings
     if estr in _parse_warnings: return
     _parse_warnings[estr] = 1
+    print estr
     log.warning(estr)
 
 ##################################################
@@ -212,7 +213,7 @@ class ParsedDocstring:
     A standard intermediate representation for parsed docstrings that
     can be used to generate output.  Parsed docstrings are produced by
     markup parsers (such as L{epytext.parse} or L{javadoc.parse}).
-    C{ParsedDocstring}s support several kinds of operation:    
+    C{ParsedDocstring}s support several kinds of operation:
       - output generation (L{to_plaintext()}, L{to_html()}, and
         L{to_latex()}).
       - Summarization (L{summary()}).
@@ -242,7 +243,7 @@ class ParsedDocstring:
     def split_fields(self, errors=None):
         """
         Split this docstring into its body and its fields.
-        
+
         @return: A tuple C{(M{body}, M{fields})}, where C{M{body}} is
             the main body of this docstring, and C{M{fields}} is a list
             of its fields.  If the resulting body is empty, return
@@ -297,7 +298,7 @@ class ParsedDocstring:
     def to_latex(self, docstring_linker, **options):
         """
         Translate this docstring to LaTeX.
-        
+
         @param docstring_linker: A LaTeX translator for crossreference
             links into and out of the docstring.
         @type docstring_linker: L{DocstringLinker}
@@ -313,7 +314,7 @@ class ParsedDocstring:
     def to_plaintext(self, docstring_linker, **options):
         """
         Translate this docstring to plaintext.
-        
+
         @param docstring_linker: A plaintext translator for
             crossreference links into and out of the docstring.
         @type docstring_linker: L{DocstringLinker}
@@ -341,7 +342,7 @@ class ConcatenatedDocstring:
     def __init__(self, *parsed_docstrings):
         self._parsed_docstrings = [pds for pds in parsed_docstrings
                                    if pds is not None]
-        
+
     def split_fields(self, errors=None):
         bodies = []
         fields = []
@@ -378,7 +379,7 @@ class ConcatenatedDocstring:
         for doc in self._parsed_docstrings:
             terms += doc.index_terms()
         return terms
-    
+
 ##################################################
 ## Fields
 ##################################################
@@ -434,7 +435,7 @@ class Field:
 ##################################################
 ## Docstring Linker (resolves crossreferences)
 ##################################################
-class DocstringLinker: 
+class DocstringLinker:
     """
     A translator for crossreference links into and out of a
     C{ParsedDocstring}.  C{DocstringLinker} is used by
@@ -481,7 +482,7 @@ class DocstringLinker:
         is *optional* -- i.e., it may raise NotImplementedError
         """
         raise NotImplementedError('DocstringLinker.url_for()')
-        
+
 
 ##################################################
 ## ParseError exceptions
@@ -517,7 +518,7 @@ class ParseError(Exception):
         self._linenum = linenum
         self._fatal = is_fatal
         self._offset = 1
-                 
+
     def is_fatal(self):
         """
         @return: true if this is a fatal error.  If an error is fatal,
@@ -551,13 +552,13 @@ class ParseError(Exception):
 
     def descr(self):
         return self._descr
-    
+
     def __str__(self):
         """
         Return a string representation of this C{ParseError}.  This
         multi-line string contains a description of the error, and
         specifies where it occured.
-        
+
         @return: the informal representation of this C{ParseError}.
         @rtype: C{string}
         """
@@ -565,7 +566,7 @@ class ParseError(Exception):
             return 'Line %s: %s' % (self._linenum+self._offset, self.descr())
         else:
             return self.descr()
-    
+
     def __repr__(self):
         """
         Return the formal representation of this C{ParseError}.
@@ -616,7 +617,7 @@ def parse_type_of(obj):
     para = doc.createElement('para')
     doc.appendChild(epytext)
     epytext.appendChild(para)
-    
+
     if type(obj) is types.InstanceType:
         link = doc.createElement('link')
         name = doc.createElement('name')
@@ -625,10 +626,9 @@ def parse_type_of(obj):
         link.appendChild(name)
         link.appendChild(target)
         name.appendChild(doc.createTextNode(str(obj.__class__.__name__)))
-        target.appendChild(doc.createTextNode(str(obj.__class__)))        
+        target.appendChild(doc.createTextNode(str(obj.__class__)))
     else:
         code = doc.createElement('code')
         para.appendChild(code)
         code.appendChild(doc.createTextNode(type(obj).__name__))
     return ParsedEpytextDocstring(doc)
-
